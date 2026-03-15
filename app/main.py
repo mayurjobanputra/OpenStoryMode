@@ -12,6 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from app.config import config, validate_config
+from app.job_persistence import restore_jobs_from_disk
 from app.metadata import extract_video_metadata
 from app.models import Job, JobStage
 from app.pipeline import run_pipeline
@@ -41,8 +42,10 @@ class GenerateRequest(BaseModel):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Validate configuration on startup."""
+    """Validate configuration on startup and restore persisted jobs."""
     validate_config(config)
+    restore_jobs_from_disk(jobs)
+    logger.info("Restored %d job(s) from disk", len(jobs))
     logger.info("OpenStoryMode started on port %d", config.port)
     yield
 
@@ -104,6 +107,11 @@ async def get_status(job_id: str) -> JSONResponse:
         "error_stage": job.error_stage.value if job.error_stage else None,
         "video_url": f"/api/video/{job.job_id}" if job.stage == JobStage.COMPLETE else None,
         "metadata": None,
+        "created_at": job.created_at,
+        "updated_at": job.updated_at,
+        "prompt": job.request.prompt if job.request else None,
+        "video_length": job.request.video_length.value if job.request else None,
+        "aspect_ratio": job.request.aspect_ratio.value if job.request else None,
     }
 
     # Include video metadata when job is complete and video exists
@@ -117,6 +125,51 @@ async def get_status(job_id: str) -> JSONResponse:
                 logger.warning("Failed to extract video metadata for job %s: %s", job_id, e)
 
     return JSONResponse(content=response)
+
+@app.get("/api/jobs")
+async def list_jobs() -> JSONResponse:
+    """Return all jobs sorted by created_at descending."""
+    job_list = []
+    for job in jobs.values():
+        # Calculate progress percentage
+        if job.stage == JobStage.ERROR:
+            progress_pct = STAGE_PROGRESS.get(job.error_stage, 0)
+        else:
+            progress_pct = STAGE_PROGRESS.get(job.stage, 0)
+
+        # Serialize script scenes
+        script = None
+        if job.scenes:
+            script = [
+                {
+                    "index": s.index,
+                    "narration_text": s.narration_text,
+                    "visual_description": s.visual_description,
+                }
+                for s in job.scenes
+            ]
+
+        job_list.append({
+            "job_id": job.job_id,
+            "prompt": job.request.prompt if job.request else None,
+            "video_length": job.request.video_length.value if job.request else None,
+            "aspect_ratio": job.request.aspect_ratio.value if job.request else None,
+            "status": job.stage.value,
+            "stage": job.stage.value,
+            "progress_pct": progress_pct,
+            "created_at": job.created_at,
+            "updated_at": job.updated_at,
+            "error": job.error,
+            "error_stage": job.error_stage.value if job.error_stage else None,
+            "script": script,
+            "video_url": f"/api/video/{job.job_id}" if job.stage == JobStage.COMPLETE else None,
+        })
+
+    # Sort by created_at descending (newest first)
+    job_list.sort(key=lambda j: j["created_at"], reverse=True)
+
+    return JSONResponse(content=job_list)
+
 
 
 @app.get("/api/video/{job_id}")

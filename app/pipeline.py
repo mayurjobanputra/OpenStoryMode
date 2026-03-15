@@ -9,6 +9,7 @@ from typing import Optional
 
 from app.models import Job, JobStage, SceneAsset
 from app.openrouter import OpenRouterClient
+from app.job_persistence import save_job_metadata, update_job_metadata
 from app.script_processor import generate_script
 from app.tts_engine import synthesize_narration
 from app.video_assembler import assemble_video
@@ -97,6 +98,7 @@ async def run_pipeline(job: Job) -> None:
         job.error = str(e)
         job.error_stage = JobStage.SCRIPT_GENERATION
         job.stage = JobStage.ERROR
+        update_job_metadata(job)
         return
 
     # Save script.json
@@ -114,9 +116,13 @@ async def run_pipeline(job: Job) -> None:
     script_path.write_text(json.dumps(script_data, indent=2))
     logger.info("Job %s: saved script to %s", job.job_id, script_path)
 
+    # Persist initial job metadata with script
+    save_job_metadata(job)
+
     # --- Stage 2: Visual Generation + TTS (concurrent per scene) ---
     job.stage = JobStage.VISUAL_GENERATION
     logger.info("Job %s: starting visual generation and TTS synthesis", job.job_id)
+    update_job_metadata(job)
 
     scene_tasks = [
         _process_scene_assets(i, job, client)
@@ -136,11 +142,13 @@ async def run_pipeline(job: Job) -> None:
             job.error = error_msg
             job.error_stage = JobStage.VISUAL_GENERATION
             job.stage = JobStage.ERROR
+            update_job_metadata(job)
             return
 
     # --- Stage 3: Video Assembly ---
     job.stage = JobStage.VIDEO_ASSEMBLY
     logger.info("Job %s: starting video assembly", job.job_id)
+    update_job_metadata(job)
 
     try:
         video_path = await assemble_video(
@@ -154,8 +162,10 @@ async def run_pipeline(job: Job) -> None:
         job.error = str(e)
         job.error_stage = JobStage.VIDEO_ASSEMBLY
         job.stage = JobStage.ERROR
+        update_job_metadata(job)
         return
 
     # --- Stage 4: Complete ---
     job.stage = JobStage.COMPLETE
     logger.info("Job %s: pipeline complete, video at %s", job.job_id, job.video_path)
+    update_job_metadata(job)

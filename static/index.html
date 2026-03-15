@@ -17,25 +17,52 @@
     align-items: center;
   }
 
-  header {
+  /* Navigation Bar */
+  .nav-bar {
     width: 100%;
-    padding: 1.5rem 2rem;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
     border-bottom: 1px solid #1e1e2a;
     background: #13131a;
   }
 
-  header h1 {
-    font-size: 1.6rem;
+  .nav-brand {
+    font-size: 1.2rem;
     font-weight: 700;
     color: #a78bfa;
     letter-spacing: -0.02em;
+    margin-right: 2rem;
+    padding: 1rem 0;
   }
 
-  header p {
-    font-size: 0.85rem;
+  .nav-items {
+    display: flex;
+    list-style: none;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-item {
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 500;
     color: #6b6b80;
-    margin-top: 0.3rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    text-decoration: none;
+    display: block;
+  }
+
+  .nav-item:hover {
+    color: #e0e0e6;
+  }
+
+  .nav-item.active {
+    color: #a78bfa;
+    border-bottom-color: #a78bfa;
   }
 
   main {
@@ -266,16 +293,225 @@
   }
 
   .new-btn:hover { background: rgba(167, 139, 250, 0.1); }
+
+  /* Jobs View */
+  .jobs-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6b6b80;
+    font-size: 0.95rem;
+  }
+
+  .jobs-empty-cta {
+    color: #a78bfa;
+    cursor: pointer;
+    text-decoration: underline;
+    background: none;
+    border: none;
+    font: inherit;
+    padding: 0;
+  }
+
+  .jobs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .job-card {
+    background: #1a1a24;
+    border: 1px solid #2a2a3a;
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+
+  .job-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .job-card-prompt {
+    font-size: 0.95rem;
+    color: #e0e0e6;
+    line-height: 1.5;
+    flex: 1;
+    word-break: break-word;
+  }
+
+  .job-status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .job-status-badge.in-progress {
+    background: rgba(124, 58, 237, 0.2);
+    color: #a78bfa;
+  }
+
+  .job-status-badge.complete {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+  }
+
+  .job-status-badge.error {
+    background: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+  }
+
+  .job-card-script {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #2a2a3a;
+  }
+
+  .job-card-script-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #9090a8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.5rem;
+  }
+
+  .job-scene {
+    margin-bottom: 0.6rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .job-scene-label {
+    font-weight: 600;
+    color: #a78bfa;
+    margin-right: 0.3rem;
+  }
+
+  .job-scene-narration {
+    color: #c0c0d0;
+  }
+
+  .job-scene-visual {
+    color: #6b6b80;
+    font-style: italic;
+    display: block;
+    margin-top: 0.15rem;
+  }
+
+  .jobs-error {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #f87171;
+    font-size: 0.9rem;
+  }
+
+  /* Job Card: In-Progress */
+  .job-card-progress {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #2a2a3a;
+  }
+
+  .job-card-progress .progress-stage {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #a78bfa;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+
+  .job-card-progress .progress-bar-track {
+    width: 100%;
+    height: 6px;
+    background: #2a2a3a;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .job-card-progress .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7c3aed, #a78bfa);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .job-card-progress .progress-pct {
+    font-size: 0.75rem;
+    color: #6b6b80;
+    margin-top: 0.35rem;
+    text-align: left;
+  }
+
+  /* Job Card: Complete (video + download) */
+  .job-card-video {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #2a2a3a;
+  }
+
+  .job-card-video video {
+    width: 100%;
+    border-radius: 6px;
+    background: #000;
+    display: block;
+  }
+
+  .job-card-video .job-download-btn {
+    display: inline-block;
+    margin-top: 0.6rem;
+    padding: 0.45rem 1.2rem;
+    background: #22c55e;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+
+  .job-card-video .job-download-btn:hover {
+    background: #16a34a;
+  }
+
+  /* Job Card: Error */
+  .job-card-error {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-top: 1px solid #7f1d1d;
+    background: rgba(248, 113, 113, 0.05);
+    border-radius: 0 0 8px 8px;
+  }
+
+  .job-card-error-stage {
+    font-size: 0.8rem;
+    color: #9090a8;
+    margin-bottom: 0.3rem;
+  }
+
+  .job-card-error-message {
+    font-size: 0.85rem;
+    color: #f87171;
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>OpenStoryMode</h1>
-  <p>Generate short-form videos from a text prompt</p>
-</header>
+<nav class="nav-bar" role="navigation" aria-label="Main navigation">
+  <div class="nav-brand">OpenStoryMode</div>
+  <ul class="nav-items">
+    <li><a class="nav-item active" data-view="create-video" href="#" role="button">Create Video</a></li>
+    <li><a class="nav-item" data-view="jobs" href="#" role="button">Jobs</a></li>
+    <li><a class="nav-item" href="https://github.com/mayurjobanputra/OpenStoryMode" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+  </ul>
+</nav>
 
 <main>
+  <section id="create-video-view">
   <!-- Input Form -->
   <section id="form-section">
     <div class="form-group">
@@ -340,6 +576,10 @@
 
   <!-- New Generation Button (shown after result or error) -->
   <button id="new-btn" class="new-btn" type="button" hidden>Generate Another Video</button>
+  </section>
+
+  <section id="jobs-view" hidden>
+  </section>
 </main>
 
 <script>
@@ -438,7 +678,28 @@
       }
 
       const data = await res.json();
-      startPolling(data.job_id);
+
+      // Redirect to Jobs view (Requirement 6.1)
+      navItems.forEach(function(n) { n.classList.remove('active'); });
+      document.querySelector('.nav-item[data-view="jobs"]').classList.add('active');
+      Object.keys(viewSections).forEach(function(key) {
+        viewSections[key].hidden = (key !== 'jobs');
+      });
+
+      // Refresh job list so the new job is visible (Requirement 6.2)
+      loadJobs();
+
+      // Reset Create Video form to defaults (Requirement 6.3)
+      promptEl.value = '';
+      charCountEl.textContent = '0';
+      videoLengthEl.value = '30s';
+      aspectRatioEl.value = '9:16';
+      submitBtn.disabled = false;
+      hideValidationError();
+      progressSection.hidden = true;
+      resultSection.hidden = true;
+      errorSection.hidden = true;
+      newBtn.hidden = true;
     } catch (err) {
       showValidationError('Network error. Is the server running?');
       submitBtn.disabled = false;
@@ -543,6 +804,234 @@
 
     errorSection.hidden = false;
     newBtn.hidden = false;
+  }
+
+  // Navigation
+  const navItems = document.querySelectorAll('.nav-item[data-view]');
+  const createVideoView = document.getElementById('create-video-view');
+  const jobsView = document.getElementById('jobs-view');
+  const viewSections = { 'create-video': createVideoView, 'jobs': jobsView };
+
+  navItems.forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      navItems.forEach(function(n) { n.classList.remove('active'); });
+      item.classList.add('active');
+
+      var targetView = item.getAttribute('data-view');
+      Object.keys(viewSections).forEach(function(key) {
+        viewSections[key].hidden = (key !== targetView);
+      });
+
+      if (targetView === 'jobs') {
+        loadJobs();
+      } else {
+        stopAllJobPolling();
+      }
+    });
+  });
+
+  // Jobs view
+  var IN_PROGRESS_STATUSES = ['queued', 'script_generation', 'visual_generation', 'tts_synthesis', 'video_assembly'];
+
+  function getJobStatusInfo(status) {
+    if (status === 'complete') return { label: 'Complete', cssClass: 'complete' };
+    if (status === 'error') return { label: 'Error', cssClass: 'error' };
+    return { label: 'In Progress', cssClass: 'in-progress' };
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Track polling timers for in-progress jobs in the Jobs view
+  var jobPollTimers = {};
+
+  function stopAllJobPolling() {
+    Object.keys(jobPollTimers).forEach(function(jobId) {
+      clearInterval(jobPollTimers[jobId]);
+      delete jobPollTimers[jobId];
+    });
+  }
+
+  function renderJobCard(job) {
+    var statusInfo = getJobStatusInfo(job.status);
+    var html = '<div class="job-card" data-job-id="' + escapeHtml(job.job_id) + '">';
+    html += '<div class="job-card-header">';
+    html += '<div class="job-card-prompt">' + escapeHtml(job.prompt) + '</div>';
+    html += '<span class="job-status-badge ' + statusInfo.cssClass + '">' + statusInfo.label + '</span>';
+    html += '</div>';
+
+    if (job.script && job.script.length > 0) {
+      html += '<div class="job-card-script">';
+      html += '<div class="job-card-script-title">Script</div>';
+      for (var i = 0; i < job.script.length; i++) {
+        var scene = job.script[i];
+        html += '<div class="job-scene">';
+        html += '<span class="job-scene-label">Scene ' + (i + 1) + ':</span>';
+        html += '<span class="job-scene-narration">' + escapeHtml(scene.narration_text || '') + '</span>';
+        if (scene.visual_description) {
+          html += '<span class="job-scene-visual">' + escapeHtml(scene.visual_description) + '</span>';
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+
+    // In-progress: progress bar with stage and percentage
+    if (IN_PROGRESS_STATUSES.indexOf(job.status) !== -1) {
+      var stageName = STAGE_NAMES[job.stage] || STAGE_NAMES[job.status] || job.status;
+      var pct = job.progress_pct || 0;
+      html += '<div class="job-card-progress">';
+      html += '<div class="progress-stage">' + escapeHtml(stageName) + '</div>';
+      html += '<div class="progress-bar-track"><div class="progress-bar-fill" style="width:' + pct + '%"></div></div>';
+      html += '<div class="progress-pct">' + pct + '%</div>';
+      html += '</div>';
+    }
+
+    // Complete: inline video player and download button
+    if (job.status === 'complete' && job.video_url) {
+      html += '<div class="job-card-video">';
+      html += '<video controls playsinline src="' + escapeHtml(job.video_url) + '"></video>';
+      html += '<a class="job-download-btn" href="' + escapeHtml(job.video_url) + '" download="video.mp4">Download MP4</a>';
+      html += '</div>';
+    }
+
+    // Error: error message and failed stage
+    if (job.status === 'error') {
+      html += '<div class="job-card-error">';
+      if (job.error_stage) {
+        var failedStageName = STAGE_NAMES[job.error_stage] || job.error_stage;
+        html += '<div class="job-card-error-stage">Failed during: ' + escapeHtml(failedStageName) + '</div>';
+      }
+      html += '<div class="job-card-error-message">' + escapeHtml(job.error || 'An unknown error occurred.') + '</div>';
+      html += '</div>';
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  function updateJobCardFromStatus(jobId, data) {
+    var card = jobsView.querySelector('.job-card[data-job-id="' + jobId + '"]');
+    if (!card) return;
+
+    // Update status badge
+    var statusInfo = getJobStatusInfo(data.status);
+    var badge = card.querySelector('.job-status-badge');
+    if (badge) {
+      badge.textContent = statusInfo.label;
+      badge.className = 'job-status-badge ' + statusInfo.cssClass;
+    }
+
+    // Update or add progress section for in-progress
+    if (IN_PROGRESS_STATUSES.indexOf(data.status) !== -1) {
+      var stageName = STAGE_NAMES[data.stage] || STAGE_NAMES[data.status] || data.status;
+      var pct = data.progress_pct || 0;
+      var progressEl = card.querySelector('.job-card-progress');
+      if (!progressEl) {
+        progressEl = document.createElement('div');
+        progressEl.className = 'job-card-progress';
+        progressEl.innerHTML = '<div class="progress-stage"></div>'
+          + '<div class="progress-bar-track"><div class="progress-bar-fill" style="width:0%"></div></div>'
+          + '<div class="progress-pct">0%</div>';
+        card.appendChild(progressEl);
+      }
+      progressEl.querySelector('.progress-stage').textContent = stageName;
+      progressEl.querySelector('.progress-bar-fill').style.width = pct + '%';
+      progressEl.querySelector('.progress-pct').textContent = pct + '%';
+    }
+
+    // Job completed: remove progress, add video
+    if (data.status === 'complete') {
+      var prog = card.querySelector('.job-card-progress');
+      if (prog) prog.remove();
+
+      if (data.video_url && !card.querySelector('.job-card-video')) {
+        var videoDiv = document.createElement('div');
+        videoDiv.className = 'job-card-video';
+        videoDiv.innerHTML = '<video controls playsinline src="' + escapeHtml(data.video_url) + '"></video>'
+          + '<a class="job-download-btn" href="' + escapeHtml(data.video_url) + '" download="video.mp4">Download MP4</a>';
+        card.appendChild(videoDiv);
+      }
+    }
+
+    // Job errored: remove progress, add error details
+    if (data.status === 'error') {
+      var prog2 = card.querySelector('.job-card-progress');
+      if (prog2) prog2.remove();
+
+      if (!card.querySelector('.job-card-error')) {
+        var errDiv = document.createElement('div');
+        errDiv.className = 'job-card-error';
+        var errHtml = '';
+        if (data.error_stage) {
+          var failedName = STAGE_NAMES[data.error_stage] || data.error_stage;
+          errHtml += '<div class="job-card-error-stage">Failed during: ' + escapeHtml(failedName) + '</div>';
+        }
+        errHtml += '<div class="job-card-error-message">' + escapeHtml(data.error || 'An unknown error occurred.') + '</div>';
+        errDiv.innerHTML = errHtml;
+        card.appendChild(errDiv);
+      }
+    }
+  }
+
+  function startJobPolling(jobId) {
+    if (jobPollTimers[jobId]) return; // already polling
+    jobPollTimers[jobId] = setInterval(async function() {
+      try {
+        var res = await fetch('/api/status/' + jobId);
+        if (!res.ok) {
+          clearInterval(jobPollTimers[jobId]);
+          delete jobPollTimers[jobId];
+          return;
+        }
+        var data = await res.json();
+        updateJobCardFromStatus(jobId, data);
+
+        if (data.status === 'complete' || data.status === 'error') {
+          clearInterval(jobPollTimers[jobId]);
+          delete jobPollTimers[jobId];
+        }
+      } catch (err) {
+        clearInterval(jobPollTimers[jobId]);
+        delete jobPollTimers[jobId];
+      }
+    }, 4000);
+  }
+
+  async function loadJobs() {
+    stopAllJobPolling();
+    jobsView.innerHTML = '<div class="jobs-empty">Loading...</div>';
+    try {
+      var res = await fetch('/api/jobs');
+      if (!res.ok) {
+        jobsView.innerHTML = '<div class="jobs-error">Failed to load jobs. Please try again.</div>';
+        return;
+      }
+      var jobs = await res.json();
+      if (!jobs.length) {
+        jobsView.innerHTML = '<div class="jobs-empty">No jobs yet. Create your first video!</div>';
+        return;
+      }
+      var html = '<div class="jobs-list">';
+      for (var i = 0; i < jobs.length; i++) {
+        html += renderJobCard(jobs[i]);
+      }
+      html += '</div>';
+      jobsView.innerHTML = html;
+
+      // Start polling for in-progress jobs
+      for (var j = 0; j < jobs.length; j++) {
+        if (IN_PROGRESS_STATUSES.indexOf(jobs[j].status) !== -1) {
+          startJobPolling(jobs[j].job_id);
+        }
+      }
+    } catch (err) {
+      jobsView.innerHTML = '<div class="jobs-error">Could not connect to server.</div>';
+    }
   }
 
   // New generation

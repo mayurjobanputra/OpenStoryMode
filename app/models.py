@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Optional
@@ -66,3 +67,5 @@ class Job:
     video_path: Optional[Path] = None
     error: Optional[str] = None
     error_stage: Optional[JobStage] = None
+    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+    updated_at: Optional[str] = None
