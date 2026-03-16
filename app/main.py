@@ -38,6 +38,7 @@ class GenerateRequest(BaseModel):
     prompt: str
     video_length: str
     aspect_ratio: str
+    caption_mode: str = "yes"
 
 
 @asynccontextmanager
@@ -81,6 +82,7 @@ async def generate(request: GenerateRequest, background_tasks: BackgroundTasks) 
         prompt=request.prompt,
         video_length=request.video_length,
         aspect_ratio=request.aspect_ratio,
+        caption_mode=request.caption_mode,
     )
 
     if not result.is_valid:
@@ -122,6 +124,13 @@ async def get_status(job_id: str) -> JSONResponse:
             for s in job.scenes
         ]
 
+    # Build video_urls list for BOTH mode
+    video_urls = None
+    if job.stage == JobStage.COMPLETE and job.video_paths is not None:
+        video_urls = [
+            f"/api/video/{job.job_id}/{p.name}" for p in job.video_paths
+        ]
+
     response: dict = {
         "job_id": job.job_id,
         "status": job.stage.value,
@@ -131,12 +140,14 @@ async def get_status(job_id: str) -> JSONResponse:
         "error_stage": job.error_stage.value if job.error_stage else None,
         "script": script,
         "video_url": f"/api/video/{job.job_id}" if job.stage == JobStage.COMPLETE else None,
+        "video_urls": video_urls,
         "metadata": None,
         "created_at": job.created_at,
         "updated_at": job.updated_at,
         "prompt": job.request.prompt if job.request else None,
         "video_length": job.request.video_length.value if job.request else None,
         "aspect_ratio": job.request.aspect_ratio.value if job.request else None,
+        "caption_mode": job.request.caption_mode.value if job.request else None,
     }
 
     # Include video metadata when job is complete and video exists
@@ -179,6 +190,7 @@ async def list_jobs() -> JSONResponse:
             "prompt": job.request.prompt if job.request else None,
             "video_length": job.request.video_length.value if job.request else None,
             "aspect_ratio": job.request.aspect_ratio.value if job.request else None,
+            "caption_mode": job.request.caption_mode.value if job.request else None,
             "status": job.stage.value,
             "stage": job.stage.value,
             "progress_pct": progress_pct,
@@ -216,6 +228,33 @@ async def get_video(job_id: str) -> FileResponse:
         media_type="video/mp4",
         filename=f"{job_id}.mp4",
     )
+
+
+@app.get("/api/video/{job_id}/{filename}")
+async def get_video_by_filename(job_id: str, filename: str) -> FileResponse:
+    """Serve an individual video file by filename (for BOTH mode)."""
+    job = jobs.get(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    if job.stage != JobStage.COMPLETE:
+        raise HTTPException(status_code=404, detail="Video not available")
+
+    if job.video_paths is None:
+        raise HTTPException(status_code=404, detail="No video files available for this job")
+
+    # Find the matching path by filename
+    for p in job.video_paths:
+        if p.name == filename:
+            if not p.exists():
+                raise HTTPException(status_code=404, detail="Video file not found")
+            return FileResponse(
+                path=str(p),
+                media_type="video/mp4",
+                filename=filename,
+            )
+
+    raise HTTPException(status_code=404, detail="Video file not found")
 
 
 @app.get("/api/health")

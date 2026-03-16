@@ -797,6 +797,17 @@
       </div>
     </div>
 
+    <div class="row">
+      <div class="form-group">
+        <label for="caption-mode">Captions</label>
+        <select id="caption-mode">
+          <option value="yes" selected>Yes</option>
+          <option value="no">No</option>
+          <option value="both">Create Both</option>
+        </select>
+      </div>
+    </div>
+
     <button id="submit-btn" type="button">Generate Video</button>
     <div id="validation-error" class="validation-error" role="alert" hidden></div>
   </section>
@@ -878,6 +889,7 @@
   const charCountEl = document.getElementById('char-count');
   const videoLengthEl = document.getElementById('video-length');
   const aspectRatioEl = document.getElementById('aspect-ratio');
+  const captionModeEl = document.getElementById('caption-mode');
   const submitBtn = document.getElementById('submit-btn');
   const validationError = document.getElementById('validation-error');
   const formSection = document.getElementById('form-section');
@@ -1075,6 +1087,10 @@
     if (data.aspect_ratio) {
       metaHtml += '<div class="job-detail-metadata-row"><span class="job-detail-metadata-label">Aspect Ratio</span><span class="job-detail-metadata-value">' + escapeHtml(data.aspect_ratio) + '</span></div>';
     }
+    if (data.caption_mode) {
+      var captionLabel = data.caption_mode === 'yes' ? 'Yes' : data.caption_mode === 'no' ? 'No' : 'Both';
+      metaHtml += '<div class="job-detail-metadata-row"><span class="job-detail-metadata-label">Captions</span><span class="job-detail-metadata-value">' + escapeHtml(captionLabel) + '</span></div>';
+    }
     if (data.created_at) {
       var createdDate = new Date(data.created_at).toLocaleString();
       metaHtml += '<div class="job-detail-metadata-row"><span class="job-detail-metadata-label">Created</span><span class="job-detail-metadata-value">' + escapeHtml(createdDate) + '</span></div>';
@@ -1112,8 +1128,30 @@
 
     // Status-specific rendering
     if (data.status === 'complete') {
-      // Video player (no autoplay!)
-      if (data.video_url) {
+      // BOTH mode: display both video links
+      if (data.video_urls && data.video_urls.length > 0) {
+        var videoHtml = '';
+        for (var vi = 0; vi < data.video_urls.length; vi++) {
+          var vUrl = data.video_urls[vi];
+          var vLabel = vUrl.indexOf('captioned') !== -1 ? 'With Captions' : 'Without Captions';
+          videoHtml += '<div style="margin-bottom:1rem;">';
+          videoHtml += '<div style="font-size:0.8rem;font-weight:600;color:#9090a8;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.4rem;">' + escapeHtml(vLabel) + '</div>';
+          videoHtml += '<video controls playsinline src="' + escapeHtml(vUrl) + '"></video>';
+          videoHtml += '</div>';
+        }
+        document.getElementById('job-detail-video').innerHTML = videoHtml;
+        document.getElementById('job-detail-video').hidden = false;
+
+        var dlHtml = '';
+        for (var di = 0; di < data.video_urls.length; di++) {
+          var dUrl = data.video_urls[di];
+          var dLabel = dUrl.indexOf('captioned') !== -1 ? 'Download With Captions' : 'Download Without Captions';
+          dlHtml += '<a class="download-btn" href="' + escapeHtml(dUrl) + '" download style="margin:0 0.5rem;">' + escapeHtml(dLabel) + '</a>';
+        }
+        document.getElementById('job-detail-download').innerHTML = dlHtml;
+        document.getElementById('job-detail-download').hidden = false;
+      } else if (data.video_url) {
+        // Single video mode (YES or NO)
         document.getElementById('job-detail-video').innerHTML =
           '<video controls playsinline src="' + escapeHtml(data.video_url) + '"></video>';
         document.getElementById('job-detail-video').hidden = false;
@@ -1223,7 +1261,8 @@
     const body = {
       prompt: promptEl.value.trim(),
       video_length: videoLengthEl.value,
-      aspect_ratio: aspectRatioEl.value
+      aspect_ratio: aspectRatioEl.value,
+      caption_mode: captionModeEl.value
     };
 
     try {
@@ -1251,6 +1290,7 @@
       charCountEl.textContent = '0';
       videoLengthEl.value = '30s';
       aspectRatioEl.value = '9:16';
+      captionModeEl.value = 'yes';
       submitBtn.disabled = false;
       hideValidationError();
       progressSection.hidden = true;

@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from app.models import AspectRatio, GenerationRequest, VideoLength
+from app.models import AspectRatio, CaptionMode, GenerationRequest, VideoLength
 
 MAX_PROMPT_LENGTH = 5000
 
@@ -56,8 +56,17 @@ def validate_aspect_ratio(value: str) -> tuple[Optional[AspectRatio], list[str]]
         return None, [f"Invalid aspect_ratio '{value}'. Allowed values: {allowed}"]
 
 
+def validate_caption_mode(value: str) -> tuple[Optional[CaptionMode], list[str]]:
+    """Validate caption_mode against allowed enum values."""
+    try:
+        return CaptionMode(value), []
+    except ValueError:
+        allowed = _get_enum_values(CaptionMode)
+        return None, [f"Invalid caption_mode '{value}'. Allowed values: {allowed}"]
+
+
 def validate_generation_request(
-    prompt: str, video_length: str, aspect_ratio: str
+    prompt: str, video_length: str, aspect_ratio: str, caption_mode: str = "yes"
 ) -> ValidationResult:
     """Validate all inputs for a generation request.
 
@@ -73,11 +82,14 @@ def validate_generation_request(
     ar, ar_errors = validate_aspect_ratio(aspect_ratio)
     errors.extend(ar_errors)
 
+    cm, cm_errors = validate_caption_mode(caption_mode)
+    errors.extend(cm_errors)
+
     if errors:
         return ValidationResult(is_valid=False, errors=errors)
 
-    assert vl is not None and ar is not None
+    assert vl is not None and ar is not None and cm is not None
     return ValidationResult(
         is_valid=True,
-        request=GenerationRequest(prompt=prompt, video_length=vl, aspect_ratio=ar),
+        request=GenerationRequest(prompt=prompt, video_length=vl, aspect_ratio=ar, caption_mode=cm),
     )

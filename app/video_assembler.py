@@ -5,7 +5,8 @@ import asyncio
 import logging
 from pathlib import Path
 
-from app.models import AspectRatio, SceneAsset
+from app.caption_renderer import build_drawtext_filter
+from app.models import AspectRatio, CaptionMode, Scene, SceneAsset
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,9 @@ async def assemble_video(
     assets: list[SceneAsset],
     job_id: str,
     aspect_ratio: AspectRatio,
-) -> Path:
+    scenes: list[Scene] | None = None,
+    caption_mode: CaptionMode = CaptionMode.YES,
+) -> Path | tuple[Path, Path]:
     """Assemble scene images and audio into a single MP4 video.
 
     For each scene, creates a video clip from the still image that matches
@@ -75,9 +78,14 @@ async def assemble_video(
         assets: List of SceneAsset, each with image_path and audio_path.
         job_id: Unique job identifier for output directory.
         aspect_ratio: Target aspect ratio for the output video.
+        scenes: Optional list of Scene objects providing narration text
+                for caption generation.
+        caption_mode: Controls caption behavior — YES (captioned output),
+                      NO (no captions), or BOTH (two output files).
 
     Returns:
-        Path to the final output MP4 file.
+        Path to the final output MP4 file, or a tuple of
+        (captioned_path, no_captions_path) when caption_mode is BOTH.
 
     Raises:
         VideoAssemblyError: If FFmpeg fails at any stage.
@@ -99,14 +107,59 @@ async def assemble_video(
     width, height = aspect_ratio.resolution()
 
     logger.info(
-        "Assembling video for job %s: %d scenes, %dx%d",
-        job_id, len(assets), width, height,
+        "Assembling video for job %s: %d scenes, %dx%d, caption_mode=%s",
+        job_id, len(assets), width, height, caption_mode.value,
+    )
+
+    if caption_mode == CaptionMode.BOTH and scenes is not None:
+        # BOTH mode: produce two output files
+        no_captions_path = output_dir / "output.mp4"
+        captioned_path = output_dir / "output_captioned.mp4"
+
+        # First pass: assemble without captions
+        if len(assets) == 1:
+            await _assemble_single_scene(
+                assets[0], no_captions_path, width, height, narration_text=None,
+            )
+        else:
+            await _assemble_multi_scene(
+                assets, no_captions_path, width, height, scenes=None,
+            )
+        logger.info("Video assembled (no captions): %s", no_captions_path)
+
+        # Second pass: assemble with captions
+        if len(assets) == 1:
+            narration = scenes[0].narration_text if scenes else None
+            await _assemble_single_scene(
+                assets[0], captioned_path, width, height, narration_text=narration,
+            )
+        else:
+            await _assemble_multi_scene(
+                assets, captioned_path, width, height, scenes=scenes,
+            )
+        logger.info("Video assembled (captioned): %s", captioned_path)
+
+        return (captioned_path, no_captions_path)
+
+    # YES or NO mode: single output
+    captions_enabled = (
+        caption_mode == CaptionMode.YES and scenes is not None
     )
 
     if len(assets) == 1:
-        await _assemble_single_scene(assets[0], output_path, width, height)
+        narration = (
+            scenes[0].narration_text
+            if captions_enabled and scenes and len(scenes) > 0
+            else None
+        )
+        await _assemble_single_scene(
+            assets[0], output_path, width, height, narration_text=narration,
+        )
     else:
-        await _assemble_multi_scene(assets, output_path, width, height)
+        await _assemble_multi_scene(
+            assets, output_path, width, height,
+            scenes=scenes if captions_enabled else None,
+        )
 
     logger.info("Video assembled: %s", output_path)
     return output_path
@@ -117,9 +170,33 @@ async def _assemble_single_scene(
     output_path: Path,
     width: int,
     height: int,
+    narration_text: str | None = None,
 ) -> None:
     """Assemble a single-scene video (no crossfade needed)."""
     duration = await _get_audio_duration(asset.audio_path)
+
+    vf = (
+        f"scale={width}:{height}:force_original_aspect_ratio=decrease,"
+        f"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:black,"
+        "format=yuv420p"
+    )
+
+    if narration_text:
+        try:
+            drawtext = build_drawtext_filter(
+                text=narration_text,
+                duration=duration,
+                video_width=width,
+                video_height=height,
+            )
+            if drawtext:
+                vf = vf + "," + drawtext
+        except Exception:
+            logger.warning(
+                "Caption generation failed for scene %d, proceeding without captions",
+                asset.scene_index,
+                exc_info=True,
+            )
 
     await _run_ffmpeg([
         "-y",
@@ -128,9 +205,7 @@ async def _assemble_single_scene(
         "-t", str(duration),
         "-i", str(asset.image_path),
         "-i", str(asset.audio_path),
-        "-vf", f"scale={width}:{height}:force_original_aspect_ratio=decrease,"
-               f"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:black,"
-               "format=yuv420p",
+        "-vf", vf,
         "-af", "aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo",
         "-c:v", "libx264",
         "-preset", "fast",
@@ -140,11 +215,13 @@ async def _assemble_single_scene(
     ])
 
 
+
 async def _assemble_multi_scene(
     assets: list[SceneAsset],
     output_path: Path,
     width: int,
     height: int,
+    scenes: list[Scene] | None = None,
 ) -> None:
     """Assemble multiple scenes with crossfade transitions using a complex filter graph."""
     n = len(assets)
@@ -208,6 +285,53 @@ async def _assemble_multi_scene(
             f":offset={offset}[vout]"
         )
 
+    # Inject caption drawtext filters onto [vout] as a post-processing chain
+    if scenes is not None and len(scenes) >= n:
+        # Compute cumulative start times accounting for crossfade overlaps
+        # Scene 0 starts at 0, scene i starts at sum(durations[0:i]) - i * CROSSFADE_DURATION
+        start_times: list[float] = [0.0]
+        for i in range(1, n):
+            start_times.append(
+                start_times[i - 1] + durations[i - 1] - CROSSFADE_DURATION
+            )
+
+        # Build caption drawtext filters for each scene
+        caption_filters: list[str] = []
+        for i in range(n):
+            scene = scenes[i]
+            if not scene.narration_text or not scene.narration_text.strip():
+                continue
+            try:
+                crossfade_dur = CROSSFADE_DURATION if i > 0 else 0.0
+                drawtext = build_drawtext_filter(
+                    text=scene.narration_text,
+                    duration=durations[i],
+                    video_width=width,
+                    video_height=height,
+                    start_time=start_times[i],
+                    crossfade_duration=crossfade_dur,
+                )
+                if drawtext:
+                    caption_filters.append(drawtext)
+            except Exception:
+                logger.warning(
+                    "Caption generation failed for scene %d, proceeding without captions",
+                    scene.index,
+                    exc_info=True,
+                )
+
+        if caption_filters:
+            # Rename [vout] to [vbase], apply caption chain, produce final [vout]
+            # Find the last video filter (before audio filters) that outputs [vout]
+            for idx in range(len(filter_parts) - 1, -1, -1):
+                if filter_parts[idx].endswith("[vout]"):
+                    filter_parts[idx] = filter_parts[idx][:-6] + "[vbase]"
+                    break
+
+            # Chain all caption drawtext filters on [vbase] -> [vout]
+            all_captions = ",".join(caption_filters)
+            filter_parts.append(f"[vbase]{all_captions}[vout]")
+
     # Normalize and concatenate audio streams
     for i in range(n):
         filter_parts.append(
@@ -232,3 +356,4 @@ async def _assemble_multi_scene(
         "-r", "25",
         str(output_path),
     ])
+

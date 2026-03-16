@@ -26,6 +26,12 @@ class AspectRatio(str, Enum):
         return (1280, 720)
 
 
+class CaptionMode(str, Enum):
+    YES = "yes"
+    NO = "no"
+    BOTH = "both"
+
+
 class JobStage(str, Enum):
     QUEUED = "queued"
     SCRIPT_GENERATION = "script_generation"
@@ -55,6 +61,7 @@ class GenerationRequest:
     prompt: str
     video_length: VideoLength
     aspect_ratio: AspectRatio
+    caption_mode: CaptionMode = CaptionMode.YES
 
 
 @dataclass
@@ -65,6 +72,7 @@ class Job:
     scenes: list[Scene] = field(default_factory=list)
     assets: list[SceneAsset] = field(default_factory=list)
     video_path: Optional[Path] = None
+    video_paths: Optional[list[Path]] = None
     error: Optional[str] = None
     error_stage: Optional[JobStage] = None
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")

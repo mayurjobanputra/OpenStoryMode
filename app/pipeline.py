@@ -151,12 +151,23 @@ async def run_pipeline(job: Job) -> None:
     update_job_metadata(job)
 
     try:
-        video_path = await assemble_video(
+        result = await assemble_video(
             assets=job.assets,
             job_id=job.job_id,
             aspect_ratio=job.request.aspect_ratio,
+            scenes=job.scenes,
+            caption_mode=job.request.caption_mode,
         )
-        job.video_path = video_path
+        if isinstance(result, tuple):
+            captioned_path, no_captions_path = result
+            job.video_path = captioned_path
+            job.video_paths = [captioned_path, no_captions_path]
+            logger.info(
+                "Job %s: BOTH mode — captioned: %s, no captions: %s",
+                job.job_id, captioned_path, no_captions_path,
+            )
+        else:
+            job.video_path = result
     except Exception as e:
         logger.error("Job %s: video assembly failed: %s", job.job_id, e)
         job.error = str(e)
