@@ -514,6 +514,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
+    align-items: start;
   }
 
   @media (max-width: 768px) {
@@ -522,9 +523,14 @@
     }
   }
 
-  .job-detail-left,
+  .job-detail-left {
+    min-width: 0;
+  }
+
   .job-detail-right {
     min-width: 0;
+    position: sticky;
+    top: 1rem;
   }
 
   .job-detail-prompt {
@@ -633,8 +639,10 @@
 
   .job-detail-video video {
     width: 100%;
+    max-height: calc(100vh - 6rem);
     display: block;
     background: #000;
+    object-fit: contain;
   }
 
   .job-detail-download {
