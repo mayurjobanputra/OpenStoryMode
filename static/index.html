@@ -298,6 +298,18 @@
 
   .new-btn:hover { background: rgba(167, 139, 250, 0.1); }
 
+  /* API Key Banner */
+  .api-key-banner {
+    padding: 0.75rem 1rem;
+    background: #2a2215;
+    border: 1px solid #92400e;
+    border-radius: 8px;
+    color: #fbbf24;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
+
   /* Jobs View */
   .jobs-empty {
     text-align: center;
@@ -747,6 +759,9 @@
 
 <main>
   <section id="create-video-view">
+  <div id="api-key-banner" class="api-key-banner" role="alert" hidden>
+    <span id="api-key-banner-text"></span>
+  </div>
   <!-- Input Form -->
   <section id="form-section">
     <div class="form-group">
@@ -870,6 +885,8 @@
   const errorStage = document.getElementById('error-stage');
   const errorMessage = document.getElementById('error-message');
   const newBtn = document.getElementById('new-btn');
+  const apiKeyBanner = document.getElementById('api-key-banner');
+  const apiKeyBannerText = document.getElementById('api-key-banner-text');
 
   // View containers
   const createVideoView = document.getElementById('create-video-view');
@@ -1583,10 +1600,31 @@
     promptEl.focus();
   });
 
+  // Health check
+  async function checkApiKeyStatus() {
+    try {
+      var res = await fetch('/api/health');
+      if (!res.ok) throw new Error('Health check failed');
+      var data = await res.json();
+      if (data.api_key_configured) {
+        apiKeyBanner.hidden = true;
+        submitBtn.disabled = false;
+      } else {
+        apiKeyBannerText.textContent = 'OpenRouter API key not configured. Set the OPENROUTER_API_KEY environment variable in your .env file and restart the server.';
+        apiKeyBanner.hidden = false;
+        submitBtn.disabled = true;
+      }
+    } catch (e) {
+      apiKeyBannerText.textContent = 'Unable to check server configuration.';
+      apiKeyBanner.hidden = false;
+    }
+  }
+
   // Initialize Router on DOMContentLoaded
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
       Router.init();
+      checkApiKeyStatus();
       // Back to Jobs link
       var backLink = document.getElementById('job-detail-back');
       if (backLink) {
@@ -1598,6 +1636,7 @@
     });
   } else {
     Router.init();
+    checkApiKeyStatus();
     // Back to Jobs link
     var backLink = document.getElementById('job-detail-back');
     if (backLink) {

@@ -200,8 +200,12 @@ async def _assemble_multi_scene(
             f":offset={offset}[vout]"
         )
 
-    # Concatenate audio streams with crossfade overlap adjustment
-    audio_inputs = "".join(f"[{n + i}:a]" for i in range(n))
+    # Normalize and concatenate audio streams
+    for i in range(n):
+        filter_parts.append(
+            f"[{n + i}:a]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo[a{i}]"
+        )
+    audio_inputs = "".join(f"[a{i}]" for i in range(n))
     filter_parts.append(
         f"{audio_inputs}concat=n={n}:v=0:a=1[aout]"
     )

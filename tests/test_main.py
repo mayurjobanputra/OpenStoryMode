@@ -21,8 +21,12 @@ def clear_jobs():
 
 @pytest.fixture
 def client():
-    """Create a test client that skips the startup validation."""
-    with patch("app.main.validate_config"):
+    """Create a test client for the FastAPI app with API key configured."""
+    with patch("app.main.config") as mock_config, \
+         patch("app.main.restore_jobs_from_disk"):
+        mock_config.api_key_configured = True
+        mock_config.port = 8000
+        mock_config.openrouter_api_key = "test-key"
         with TestClient(app, raise_server_exceptions=False) as c:
             yield c
 
@@ -314,8 +318,7 @@ class TestStartupRestoration:
             )
             store[job.job_id] = job
 
-        with patch("app.main.validate_config"), \
-             patch("app.main.restore_jobs_from_disk", side_effect=fake_restore):
+        with patch("app.main.restore_jobs_from_disk", side_effect=fake_restore):
             with TestClient(app, raise_server_exceptions=False) as c:
                 # After startup, the restored job should be accessible
                 resp = c.get("/api/status/restored-123")
@@ -329,11 +332,9 @@ class TestStartupRestoration:
 
     def test_lifespan_calls_restore_before_yield(self):
         """Verify restore_jobs_from_disk is called during startup."""
-        with patch("app.main.validate_config") as mock_validate, \
-             patch("app.main.restore_jobs_from_disk") as mock_restore:
+        with patch("app.main.restore_jobs_from_disk") as mock_restore:
             with TestClient(app, raise_server_exceptions=False):
                 pass
-            mock_validate.assert_called_once()
             mock_restore.assert_called_once_with(jobs)
 
 

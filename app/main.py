@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from app.config import config, validate_config
+from app.config import config
 from app.job_persistence import restore_jobs_from_disk
 from app.metadata import extract_video_metadata
 from app.models import Job, JobStage
@@ -42,8 +42,12 @@ class GenerateRequest(BaseModel):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Validate configuration on startup and restore persisted jobs."""
-    validate_config(config)
+    """Check configuration on startup and restore persisted jobs."""
+    if not config.api_key_configured:
+        logger.warning(
+            "OPENROUTER_API_KEY is not set. Video generation is disabled. "
+            "Set the OPENROUTER_API_KEY environment variable and restart."
+        )
     restore_jobs_from_disk(jobs)
     logger.info("Restored %d job(s) from disk", len(jobs))
     logger.info("OpenStoryMode started on port %d", config.port)
@@ -65,6 +69,14 @@ def _run_pipeline_sync(job: Job) -> None:
 @app.post("/api/generate", status_code=202)
 async def generate(request: GenerateRequest, background_tasks: BackgroundTasks) -> JSONResponse:
     """Validate request, create a Job, launch pipeline as background task, return 202."""
+    if not config.api_key_configured:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "detail": "API key not configured. Set the OPENROUTER_API_KEY environment variable and restart the server."
+            },
+        )
+
     result = validate_generation_request(
         prompt=request.prompt,
         video_length=request.video_length,
@@ -204,6 +216,12 @@ async def get_video(job_id: str) -> FileResponse:
         media_type="video/mp4",
         filename=f"{job_id}.mp4",
     )
+
+
+@app.get("/api/health")
+async def health() -> JSONResponse:
+    """Return configuration status for frontend health checks."""
+    return JSONResponse(content={"api_key_configured": config.api_key_configured})
 
 
 # SPA catch-all routes — serve index.html for client-side routing paths.
