@@ -98,6 +98,18 @@ async def get_status(job_id: str) -> JSONResponse:
     else:
         progress_pct = STAGE_PROGRESS.get(job.stage, 0)
 
+    # Serialize script scenes
+    script = None
+    if job.scenes:
+        script = [
+            {
+                "index": s.index,
+                "narration_text": s.narration_text,
+                "visual_description": s.visual_description,
+            }
+            for s in job.scenes
+        ]
+
     response: dict = {
         "job_id": job.job_id,
         "status": job.stage.value,
@@ -105,6 +117,7 @@ async def get_status(job_id: str) -> JSONResponse:
         "progress_pct": progress_pct,
         "error": job.error,
         "error_stage": job.error_stage.value if job.error_stage else None,
+        "script": script,
         "video_url": f"/api/video/{job.job_id}" if job.stage == JobStage.COMPLETE else None,
         "metadata": None,
         "created_at": job.created_at,
