@@ -43,6 +43,7 @@ async def generate_visual(
         prompt=scene.visual_description,
         width=width,
         height=height,
+        aspect_ratio=aspect_ratio.value,
         scene_id=scene.index,
     )
 

@@ -123,17 +123,19 @@ async def _assemble_single_scene(
 
     await _run_ffmpeg([
         "-y",
+        "-framerate", "25",
         "-loop", "1",
+        "-t", str(duration),
         "-i", str(asset.image_path),
         "-i", str(asset.audio_path),
-        "-t", str(duration),
         "-vf", f"scale={width}:{height}:force_original_aspect_ratio=decrease,"
                f"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:black,"
                "format=yuv420p",
+        "-af", "aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo",
         "-c:v", "libx264",
         "-preset", "fast",
         "-c:a", "aac",
-        "-shortest",
+        "-r", "25",
         str(output_path),
     ])
 
@@ -152,10 +154,16 @@ async def _assemble_multi_scene(
         dur = await _get_audio_duration(asset.audio_path)
         durations.append(dur)
 
-    # Build FFmpeg inputs and filter graph
+    # Build FFmpeg inputs: use -framerate 25 -loop 1 -t <duration> for each
+    # image to produce constant-fps video streams (required by xfade filter)
     input_args: list[str] = []
-    for asset in assets:
-        input_args.extend(["-loop", "1", "-i", str(asset.image_path)])
+    for i, asset in enumerate(assets):
+        input_args.extend([
+            "-framerate", "25",
+            "-loop", "1",
+            "-t", str(durations[i]),
+            "-i", str(asset.image_path),
+        ])
     for asset in assets:
         input_args.extend(["-i", str(asset.audio_path)])
 
@@ -167,10 +175,10 @@ async def _assemble_multi_scene(
 
     filter_parts: list[str] = []
 
-    # Trim each image input to its audio duration
+    # Scale each image input (no trim/setpts needed — duration set at input level)
     for i in range(n):
         filter_parts.append(
-            f"[{i}:v]{scale_filter},trim=duration={durations[i]},setpts=PTS-STARTPTS[v{i}]"
+            f"[{i}:v]{scale_filter}[v{i}]"
         )
 
     # Chain crossfade transitions between consecutive video streams
@@ -221,5 +229,6 @@ async def _assemble_multi_scene(
         "-c:v", "libx264",
         "-preset", "fast",
         "-c:a", "aac",
+        "-r", "25",
         str(output_path),
     ])

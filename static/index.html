@@ -958,6 +958,8 @@
     createVideoView.hidden = false;
     jobsListView.hidden = true;
     jobsView.hidden = true;
+    var jobDetailView = document.getElementById('job-detail-view');
+    if (jobDetailView) jobDetailView.hidden = true;
   }
 
   function showJobsListView() {
@@ -1233,8 +1235,8 @@
 
       const data = await res.json();
 
-      // Navigate to Jobs view via Router (Requirement 6.1)
-      Router.navigate('/jobs');
+      // Navigate to the job detail page for the new video
+      Router.navigate('/job/' + encodeURIComponent(data.job_id));
 
       // Reset Create Video form to defaults (Requirement 6.3)
       promptEl.value = '';

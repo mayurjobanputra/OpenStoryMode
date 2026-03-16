@@ -110,6 +110,7 @@ class OpenRouterClient:
         prompt: str,
         width: int,
         height: int,
+        aspect_ratio: str = "1:1",
         model: str = "google/gemini-2.5-flash-image",
         scene_id: Optional[int] = None,
     ) -> bytes:
@@ -129,6 +130,9 @@ class OpenRouterClient:
                         "model": model,
                         "messages": [{"role": "user", "content": prompt}],
                         "modalities": ["image", "text"],
+                        "image_config": {
+                            "aspect_ratio": aspect_ratio,
+                        },
                     },
                     timeout=120.0,
                 )
