@@ -71,6 +71,10 @@
     padding: 2rem 1.5rem 4rem;
   }
 
+  main:has(#jobs-list-view:not([hidden])) {
+    max-width: 1200px;
+  }
+
   /* Form */
   .form-group { margin-bottom: 1.25rem; }
 
@@ -312,6 +316,70 @@
     padding: 0;
   }
 
+  /* Jobs Grid Layout */
+  .jobs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  /* Job Summary Card */
+  .job-summary-card {
+    background: #1a1a24;
+    border: 1px solid #2a2a3a;
+    border-radius: 10px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: border-color 0.2s;
+  }
+
+  .job-summary-card:hover {
+    border-color: #3a3a4a;
+  }
+
+  .job-summary-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .job-summary-card-prompt {
+    font-size: 0.95rem;
+    color: #e0e0e6;
+    line-height: 1.5;
+    flex: 1;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .job-summary-card-actions {
+    margin-top: auto;
+  }
+
+  .job-summary-card-actions .view-details-btn {
+    display: inline-block;
+    padding: 0.45rem 1rem;
+    background: transparent;
+    color: #a78bfa;
+    border: 1px solid #a78bfa;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .job-summary-card-actions .view-details-btn:hover {
+    background: rgba(167, 139, 250, 0.1);
+  }
+
   .jobs-list {
     display: flex;
     flex-direction: column;
@@ -410,6 +478,156 @@
     font-size: 0.9rem;
   }
 
+  /* Job Detail View */
+  main:has(#job-detail-view:not([hidden])) {
+    max-width: 1200px;
+  }
+
+  .job-detail-back {
+    display: inline-block;
+    color: #a78bfa;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .job-detail-back:hover {
+    color: #c4b5fd;
+  }
+
+  .job-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .job-detail {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .job-detail-left,
+  .job-detail-right {
+    min-width: 0;
+  }
+
+  .job-detail-prompt {
+    background: #1a1a24;
+    border: 1px solid #2a2a3a;
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #e0e0e6;
+    word-break: break-word;
+  }
+
+  .job-detail-metadata {
+    background: #1a1a24;
+    border: 1px solid #2a2a3a;
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .job-detail-metadata-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+  }
+
+  .job-detail-metadata-label {
+    color: #6b6b80;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.75rem;
+  }
+
+  .job-detail-metadata-value {
+    color: #e0e0e6;
+  }
+
+  .job-detail-progress {
+    background: #1a1a24;
+    border: 1px solid #2a2a3a;
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .job-detail-progress .progress-stage {
+    text-align: left;
+  }
+
+  .job-detail-error {
+    background: #1f1215;
+    border: 1px solid #7f1d1d;
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .job-detail-error .error-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f87171;
+    margin-bottom: 0.4rem;
+  }
+
+  .job-detail-error .error-stage {
+    font-size: 0.85rem;
+    color: #9090a8;
+    margin-bottom: 0.4rem;
+  }
+
+  .job-detail-error .error-message {
+    font-size: 0.9rem;
+    color: #e0e0e6;
+  }
+
+  .job-detail-video {
+    background: #1a1a24;
+    border: 1px solid #2a2a3a;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .job-detail-video video {
+    width: 100%;
+    display: block;
+    background: #000;
+  }
+
+  .job-detail-download {
+    text-align: center;
+  }
+
+  .job-detail-download .download-btn {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    background: #22c55e;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+
+  .job-detail-download .download-btn:hover {
+    background: #16a34a;
+  }
+
   /* Job Card: In-Progress */
   .job-card-progress {
     margin-top: 0.75rem;
@@ -504,8 +722,8 @@
 <nav class="nav-bar" role="navigation" aria-label="Main navigation">
   <div class="nav-brand">OpenStoryMode</div>
   <ul class="nav-items">
-    <li><a class="nav-item active" data-view="create-video" href="#" role="button">Create Video</a></li>
-    <li><a class="nav-item" data-view="jobs" href="#" role="button">Jobs</a></li>
+    <li><a class="nav-item active" data-view="create-video" href="/" role="button">Create Video</a></li>
+    <li><a class="nav-item" data-view="jobs" href="/jobs" role="button">Jobs</a></li>
     <li><a class="nav-item" href="https://github.com/mayurjobanputra/OpenStoryMode" target="_blank" rel="noopener noreferrer">GitHub</a></li>
   </ul>
 </nav>
@@ -578,6 +796,36 @@
   <button id="new-btn" class="new-btn" type="button" hidden>Generate Another Video</button>
   </section>
 
+  <section id="jobs-list-view" hidden>
+    <div class="jobs-grid" id="jobs-grid"></div>
+  </section>
+
+  <section id="job-detail-view" hidden>
+    <a class="job-detail-back" id="job-detail-back">← Back to Jobs</a>
+    <div class="job-detail">
+      <div class="job-detail-left">
+        <div class="job-detail-prompt" id="job-detail-prompt"></div>
+        <div class="job-detail-metadata" id="job-detail-metadata"></div>
+        <div class="job-detail-progress" id="job-detail-progress" hidden>
+          <div class="progress-stage" id="job-detail-progress-stage">Queued</div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="job-detail-progress-bar" style="width: 0%"></div>
+          </div>
+          <div class="progress-pct" id="job-detail-progress-pct">0%</div>
+        </div>
+        <div class="job-detail-error" id="job-detail-error" hidden>
+          <div class="error-title">Generation Failed</div>
+          <div class="error-stage" id="job-detail-error-stage"></div>
+          <div class="error-message" id="job-detail-error-message"></div>
+        </div>
+      </div>
+      <div class="job-detail-right">
+        <div class="job-detail-video" id="job-detail-video" hidden></div>
+        <div class="job-detail-download" id="job-detail-download" hidden></div>
+      </div>
+    </div>
+  </section>
+
   <section id="jobs-view" hidden>
   </section>
 </main>
@@ -604,6 +852,254 @@
   const errorStage = document.getElementById('error-stage');
   const errorMessage = document.getElementById('error-message');
   const newBtn = document.getElementById('new-btn');
+
+  // View containers
+  const createVideoView = document.getElementById('create-video-view');
+  const jobsView = document.getElementById('jobs-view');
+  const jobsListView = document.getElementById('jobs-list-view');
+  const jobsGrid = document.getElementById('jobs-grid');
+
+  // ── Router ──────────────────────────────────────────────────
+  var Router = {
+    routes: [
+      { pattern: /^\/$/,               handler: function() { showCreateVideoView(); } },
+      { pattern: /^\/jobs$/,            handler: function() { showJobsListView(); } },
+      { pattern: /^\/job\/([^/]+)$/,    handler: function(m) { showJobDetailView(m[1]); } }
+    ],
+
+    init: function() {
+      window.addEventListener('popstate', Router._onPopState);
+      // Intercept nav-item clicks to use pushState
+      document.querySelectorAll('.nav-item[data-view]').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          Router.navigate(link.getAttribute('href'));
+        });
+      });
+      // Dispatch the current URL on load
+      Router._dispatch(window.location.pathname);
+    },
+
+    navigate: function(path) {
+      history.pushState(null, '', path);
+      Router._dispatch(path);
+    },
+
+    _dispatch: function(path) {
+      // Stop any active job polling when switching views
+      stopAllJobPolling();
+
+      for (var i = 0; i < Router.routes.length; i++) {
+        var match = path.match(Router.routes[i].pattern);
+        if (match) {
+          Router.routes[i].handler(match);
+          Router._updateNav(path);
+          return;
+        }
+      }
+      // Unknown route → redirect to /
+      Router.navigate('/');
+    },
+
+    _onPopState: function(event) {
+      Router._dispatch(window.location.pathname);
+    },
+
+    _updateNav: function(path) {
+      var navLinks = document.querySelectorAll('.nav-item[data-view]');
+      navLinks.forEach(function(link) {
+        link.classList.remove('active');
+      });
+      if (path === '/') {
+        document.querySelector('.nav-item[data-view="create-video"]').classList.add('active');
+      } else if (path === '/jobs' || path.indexOf('/job/') === 0) {
+        document.querySelector('.nav-item[data-view="jobs"]').classList.add('active');
+      }
+    }
+  };
+
+  // ── View Stubs ─────────────────────────────────────────────
+  function showCreateVideoView() {
+    createVideoView.hidden = false;
+    jobsListView.hidden = true;
+    jobsView.hidden = true;
+  }
+
+  function showJobsListView() {
+    // Hide all other views
+    createVideoView.hidden = true;
+    jobsView.hidden = true;
+    var jobDetailView = document.getElementById('job-detail-view');
+    if (jobDetailView) jobDetailView.hidden = true;
+
+    // Stop any active polling timers (create-video progress + per-job polling)
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    stopAllJobPolling();
+
+    // Show jobs list and fetch data
+    jobsListView.hidden = false;
+    loadJobs();
+  }
+
+  var jobDetailPollTimer = null;
+
+  function showJobDetailView(jobId) {
+    createVideoView.hidden = true;
+    jobsListView.hidden = true;
+    jobsView.hidden = true;
+
+    // Clear any existing detail poll timer
+    if (jobDetailPollTimer) {
+      clearInterval(jobDetailPollTimer);
+      jobDetailPollTimer = null;
+    }
+
+    var jobDetailView = document.getElementById('job-detail-view');
+    jobDetailView.hidden = false;
+
+    // Reset sections
+    document.getElementById('job-detail-prompt').textContent = '';
+    document.getElementById('job-detail-metadata').innerHTML = '';
+    document.getElementById('job-detail-progress').hidden = true;
+    document.getElementById('job-detail-error').hidden = true;
+    document.getElementById('job-detail-video').hidden = true;
+    document.getElementById('job-detail-video').innerHTML = '';
+    document.getElementById('job-detail-download').hidden = true;
+    document.getElementById('job-detail-download').innerHTML = '';
+
+    fetchAndRenderJobDetail(jobId);
+  }
+
+  async function fetchAndRenderJobDetail(jobId) {
+    try {
+      var res = await fetch('/api/status/' + encodeURIComponent(jobId));
+      if (res.status === 404) {
+        renderJobDetailError404();
+        return;
+      }
+      if (!res.ok) {
+        renderJobDetailFetchError();
+        return;
+      }
+      var data = await res.json();
+      renderJobDetail(data);
+
+      // Start polling if in-progress or queued
+      if (data.status !== 'complete' && data.status !== 'error') {
+        startJobDetailPolling(jobId);
+      }
+    } catch (err) {
+      renderJobDetailFetchError();
+    }
+  }
+
+  function renderJobDetailError404() {
+    document.getElementById('job-detail-prompt').innerHTML =
+      '<div class="error-card" role="alert">' +
+      '<div class="error-title">Job Not Found</div>' +
+      '<div class="error-message">This job does not exist. <a href="/jobs" style="color:#a78bfa;" id="job-detail-404-link">Back to Jobs</a></div>' +
+      '</div>';
+    var link404 = document.getElementById('job-detail-404-link');
+    if (link404) {
+      link404.addEventListener('click', function(e) {
+        e.preventDefault();
+        Router.navigate('/jobs');
+      });
+    }
+  }
+
+  function renderJobDetailFetchError() {
+    document.getElementById('job-detail-prompt').innerHTML =
+      '<div class="error-card" role="alert">' +
+      '<div class="error-title">Failed to Load Job</div>' +
+      '<div class="error-message">Could not load job details. Please try again.</div>' +
+      '</div>';
+  }
+
+  function renderJobDetail(data) {
+    // Prompt
+    document.getElementById('job-detail-prompt').textContent = data.prompt || '';
+
+    // Metadata
+    var metaHtml = '';
+    if (data.video_length) {
+      metaHtml += '<div class="job-detail-metadata-row"><span class="job-detail-metadata-label">Video Length</span><span class="job-detail-metadata-value">' + escapeHtml(data.video_length) + '</span></div>';
+    }
+    if (data.aspect_ratio) {
+      metaHtml += '<div class="job-detail-metadata-row"><span class="job-detail-metadata-label">Aspect Ratio</span><span class="job-detail-metadata-value">' + escapeHtml(data.aspect_ratio) + '</span></div>';
+    }
+    if (data.created_at) {
+      var createdDate = new Date(data.created_at).toLocaleString();
+      metaHtml += '<div class="job-detail-metadata-row"><span class="job-detail-metadata-label">Created</span><span class="job-detail-metadata-value">' + escapeHtml(createdDate) + '</span></div>';
+    }
+    var statusInfo = getJobStatusInfo(data.status);
+    metaHtml += '<div class="job-detail-metadata-row"><span class="job-detail-metadata-label">Status</span><span class="job-status-badge ' + statusInfo.cssClass + '">' + statusInfo.label + '</span></div>';
+    document.getElementById('job-detail-metadata').innerHTML = metaHtml;
+
+    // Hide all status-specific sections first
+    document.getElementById('job-detail-progress').hidden = true;
+    document.getElementById('job-detail-error').hidden = true;
+    document.getElementById('job-detail-video').hidden = true;
+    document.getElementById('job-detail-download').hidden = true;
+
+    // Status-specific rendering
+    if (data.status === 'complete') {
+      // Video player (no autoplay!)
+      if (data.video_url) {
+        document.getElementById('job-detail-video').innerHTML =
+          '<video controls playsinline src="' + escapeHtml(data.video_url) + '"></video>';
+        document.getElementById('job-detail-video').hidden = false;
+
+        document.getElementById('job-detail-download').innerHTML =
+          '<a class="download-btn" href="' + escapeHtml(data.video_url) + '" download="video.mp4">Download MP4</a>';
+        document.getElementById('job-detail-download').hidden = false;
+      }
+    } else if (data.status === 'error') {
+      // Error display
+      if (data.error_stage) {
+        var failedStageName = STAGE_NAMES[data.error_stage] || data.error_stage;
+        document.getElementById('job-detail-error-stage').textContent = 'Failed during: ' + failedStageName;
+      } else {
+        document.getElementById('job-detail-error-stage').textContent = '';
+      }
+      document.getElementById('job-detail-error-message').textContent = data.error || 'An unknown error occurred.';
+      document.getElementById('job-detail-error').hidden = false;
+    } else {
+      // In-progress / queued — show progress
+      var stageName = STAGE_NAMES[data.stage] || STAGE_NAMES[data.status] || data.status;
+      var pct = data.progress_pct || 0;
+      document.getElementById('job-detail-progress-stage').textContent = stageName;
+      document.getElementById('job-detail-progress-bar').style.width = pct + '%';
+      document.getElementById('job-detail-progress-pct').textContent = pct + '%';
+      document.getElementById('job-detail-progress').hidden = false;
+    }
+  }
+
+  function startJobDetailPolling(jobId) {
+    if (jobDetailPollTimer) {
+      clearInterval(jobDetailPollTimer);
+    }
+    jobDetailPollTimer = setInterval(async function() {
+      try {
+        var res = await fetch('/api/status/' + encodeURIComponent(jobId));
+        if (!res.ok) {
+          clearInterval(jobDetailPollTimer);
+          jobDetailPollTimer = null;
+          return;
+        }
+        var data = await res.json();
+        renderJobDetail(data);
+
+        if (data.status === 'complete' || data.status === 'error') {
+          clearInterval(jobDetailPollTimer);
+          jobDetailPollTimer = null;
+        }
+      } catch (err) {
+        clearInterval(jobDetailPollTimer);
+        jobDetailPollTimer = null;
+      }
+    }, 3000);
+  }
 
   // Stage display names
   const STAGE_NAMES = {
@@ -679,15 +1175,8 @@
 
       const data = await res.json();
 
-      // Redirect to Jobs view (Requirement 6.1)
-      navItems.forEach(function(n) { n.classList.remove('active'); });
-      document.querySelector('.nav-item[data-view="jobs"]').classList.add('active');
-      Object.keys(viewSections).forEach(function(key) {
-        viewSections[key].hidden = (key !== 'jobs');
-      });
-
-      // Refresh job list so the new job is visible (Requirement 6.2)
-      loadJobs();
+      // Navigate to Jobs view via Router (Requirement 6.1)
+      Router.navigate('/jobs');
 
       // Reset Create Video form to defaults (Requirement 6.3)
       promptEl.value = '';
@@ -806,30 +1295,11 @@
     newBtn.hidden = false;
   }
 
-  // Navigation
+  // Navigation (handled by Router)
   const navItems = document.querySelectorAll('.nav-item[data-view]');
-  const createVideoView = document.getElementById('create-video-view');
-  const jobsView = document.getElementById('jobs-view');
   const viewSections = { 'create-video': createVideoView, 'jobs': jobsView };
 
-  navItems.forEach(function(item) {
-    item.addEventListener('click', function(e) {
-      e.preventDefault();
-      navItems.forEach(function(n) { n.classList.remove('active'); });
-      item.classList.add('active');
-
-      var targetView = item.getAttribute('data-view');
-      Object.keys(viewSections).forEach(function(key) {
-        viewSections[key].hidden = (key !== targetView);
-      });
-
-      if (targetView === 'jobs') {
-        loadJobs();
-      } else {
-        stopAllJobPolling();
-      }
-    });
-  });
+  // Navigation click handlers are now in Router.init()
 
   // Jobs view
   var IN_PROGRESS_STATUSES = ['queued', 'script_generation', 'visual_generation', 'tts_synthesis', 'video_assembly'];
@@ -854,6 +1324,25 @@
       clearInterval(jobPollTimers[jobId]);
       delete jobPollTimers[jobId];
     });
+    // Also stop job detail polling
+    if (jobDetailPollTimer) {
+      clearInterval(jobDetailPollTimer);
+      jobDetailPollTimer = null;
+    }
+  }
+
+  function renderJobSummaryCard(job) {
+    var statusInfo = getJobStatusInfo(job.status);
+    var html = '<div class="job-summary-card" data-job-id="' + escapeHtml(job.job_id) + '">';
+    html += '<div class="job-summary-card-header">';
+    html += '<div class="job-summary-card-prompt">' + escapeHtml(job.prompt) + '</div>';
+    html += '<span class="job-status-badge ' + statusInfo.cssClass + '">' + statusInfo.label + '</span>';
+    html += '</div>';
+    html += '<div class="job-summary-card-actions">';
+    html += '<a class="view-details-btn" href="/job/' + encodeURIComponent(job.job_id) + '">View Details</a>';
+    html += '</div>';
+    html += '</div>';
+    return html;
   }
 
   function renderJobCard(job) {
@@ -1004,33 +1493,37 @@
 
   async function loadJobs() {
     stopAllJobPolling();
-    jobsView.innerHTML = '<div class="jobs-empty">Loading...</div>';
+    jobsGrid.innerHTML = '<div class="jobs-empty">Loading...</div>';
     try {
       var res = await fetch('/api/jobs');
       if (!res.ok) {
-        jobsView.innerHTML = '<div class="jobs-error">Failed to load jobs. Please try again.</div>';
+        jobsGrid.innerHTML = '<div class="jobs-error">Failed to load jobs. Please try again.</div>';
         return;
       }
       var jobs = await res.json();
       if (!jobs.length) {
-        jobsView.innerHTML = '<div class="jobs-empty">No jobs yet. Create your first video!</div>';
+        jobsGrid.innerHTML = '<div class="jobs-empty">No jobs yet. <button class="jobs-empty-cta" id="jobs-empty-cta-btn">Create your first video!</button></div>';
+        var ctaBtn = document.getElementById('jobs-empty-cta-btn');
+        if (ctaBtn) {
+          ctaBtn.addEventListener('click', function() { Router.navigate('/'); });
+        }
         return;
       }
-      var html = '<div class="jobs-list">';
+      var html = '';
       for (var i = 0; i < jobs.length; i++) {
-        html += renderJobCard(jobs[i]);
+        html += renderJobSummaryCard(jobs[i]);
       }
-      html += '</div>';
-      jobsView.innerHTML = html;
+      jobsGrid.innerHTML = html;
 
-      // Start polling for in-progress jobs
-      for (var j = 0; j < jobs.length; j++) {
-        if (IN_PROGRESS_STATUSES.indexOf(jobs[j].status) !== -1) {
-          startJobPolling(jobs[j].job_id);
-        }
-      }
+      // Intercept View Details link clicks to use Router
+      jobsGrid.querySelectorAll('.view-details-btn').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          Router.navigate(link.getAttribute('href'));
+        });
+      });
     } catch (err) {
-      jobsView.innerHTML = '<div class="jobs-error">Could not connect to server.</div>';
+      jobsGrid.innerHTML = '<div class="jobs-error">Could not connect to server.</div>';
     }
   }
 
@@ -1048,6 +1541,31 @@
     hideValidationError();
     promptEl.focus();
   });
+
+  // Initialize Router on DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      Router.init();
+      // Back to Jobs link
+      var backLink = document.getElementById('job-detail-back');
+      if (backLink) {
+        backLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          Router.navigate('/jobs');
+        });
+      }
+    });
+  } else {
+    Router.init();
+    // Back to Jobs link
+    var backLink = document.getElementById('job-detail-back');
+    if (backLink) {
+      backLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        Router.navigate('/jobs');
+      });
+    }
+  }
 })();
 </script>
 

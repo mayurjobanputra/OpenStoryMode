@@ -1,5 +1,8 @@
 # OpenStoryMode
-OSS alt for Opus.Pro story mode
+
+Open-source AI video generator. Type a prompt, get a narrated video with visuals — no editing required.
+
+OpenStoryMode takes your idea, writes a scene-by-scene script using an LLM, generates images and narration for each scene, and assembles everything into an MP4. Built with Python, FastAPI, and vanilla JS. Runs locally on your machine via [OpenRouter](https://openrouter.ai/).
 
 ## Prerequisites
 

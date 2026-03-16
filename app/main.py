@@ -193,6 +193,26 @@ async def get_video(job_id: str) -> FileResponse:
     )
 
 
+# SPA catch-all routes — serve index.html for client-side routing paths.
+# These must be registered before the static files mount so they take priority.
+_index_html = Path("static/index.html")
+
+
+@app.get("/")
+async def serve_spa_root() -> FileResponse:
+    return FileResponse(_index_html, media_type="text/html")
+
+
+@app.get("/jobs")
+async def serve_spa_jobs() -> FileResponse:
+    return FileResponse(_index_html, media_type="text/html")
+
+
+@app.get("/job/{job_id}")
+async def serve_spa_job_detail(job_id: str) -> FileResponse:
+    return FileResponse(_index_html, media_type="text/html")
+
+
 # Mount static files for serving the web UI
 static_dir = Path("static")
 if static_dir.exists():
