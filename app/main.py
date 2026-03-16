@@ -1,4 +1,4 @@
-"""FastAPI application entry point for OpenStoryMode."""
+"""FastAPI application entry point for Vibe Your Videos."""
 
 import asyncio
 import logging
@@ -51,11 +51,11 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         )
     restore_jobs_from_disk(jobs)
     logger.info("Restored %d job(s) from disk", len(jobs))
-    logger.info("OpenStoryMode started on port %d", config.port)
+    logger.info("Vibe Your Videos started on port %d", config.port)
     yield
 
 
-app = FastAPI(title="OpenStoryMode", lifespan=lifespan)
+app = FastAPI(title="Vibe Your Videos", lifespan=lifespan)
 
 
 def _run_pipeline_sync(job: Job) -> None:

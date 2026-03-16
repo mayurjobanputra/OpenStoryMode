@@ -1,4 +1,4 @@
-# Visual Generator for OpenStoryMode
+# Visual Generator for Vibe Your Videos
 # Generates AI images for each scene via OpenRouter's image generation endpoint.
 
 import logging

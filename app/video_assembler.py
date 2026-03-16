@@ -1,4 +1,4 @@
-# Video Assembler for OpenStoryMode
+# Video Assembler for Vibe Your Videos
 # Composites scene images and narration audio into a single MP4 using FFmpeg.
 
 import asyncio

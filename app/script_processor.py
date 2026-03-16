@@ -1,4 +1,4 @@
-# Script Processor for OpenStoryMode
+# Script Processor for Vibe Your Videos
 # Generates scene-by-scene scripts from user prompts via LLM
 
 import json

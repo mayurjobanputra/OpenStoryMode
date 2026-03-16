@@ -1,4 +1,4 @@
-# Configuration loading for OpenStoryMode
+# Configuration loading for Vibe Your Videos
 
 import logging
 import os

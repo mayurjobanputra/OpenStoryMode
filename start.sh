@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Start OpenStoryMode server
+# Start Vibe Your Videos server
 
 set -e
 
@@ -34,5 +34,5 @@ fi
 PORT="${PORT:-$(grep -s '^PORT=' .env | cut -d= -f2 || echo 8000)}"
 PORT="${PORT:-8000}"
 
-echo "Starting OpenStoryMode on http://localhost:$PORT"
+echo "Starting Vibe Your Videos on http://localhost:$PORT"
 exec .venv/bin/uvicorn app.main:app --host 0.0.0.0 --port "$PORT"

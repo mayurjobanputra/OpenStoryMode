@@ -1,1 +1,1 @@
-# OpenStoryMode application package
+# Vibe Your Videos application package

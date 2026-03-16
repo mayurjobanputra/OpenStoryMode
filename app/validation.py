@@ -1,4 +1,4 @@
-"""Prompt validation for OpenStoryMode generation requests."""
+"""Prompt validation for Vibe Your Videos generation requests."""
 
 from dataclasses import dataclass, field
 from typing import Optional

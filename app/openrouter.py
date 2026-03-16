@@ -1,4 +1,4 @@
-# OpenRouter unified API client for OpenStoryMode
+# OpenRouter unified API client for Vibe Your Videos
 
 import asyncio
 import logging

@@ -1,4 +1,4 @@
-# Pipeline Manager for OpenStoryMode
+# Pipeline Manager for Vibe Your Videos
 # Orchestrates the full video generation pipeline: script → visuals + TTS → assembly
 
 import asyncio

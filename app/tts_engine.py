@@ -1,4 +1,4 @@
-# TTS Engine for OpenStoryMode
+# TTS Engine for Vibe Your Videos
 # Synthesizes narration audio for each scene via OpenRouter's TTS endpoint.
 
 import logging

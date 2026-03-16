@@ -1,1 +1,1 @@
-# Tests package for OpenStoryMode
+# Tests package for Vibe Your Videos
