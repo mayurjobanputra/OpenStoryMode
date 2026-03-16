@@ -38,6 +38,9 @@ def _is_renderable(ch: str) -> bool:
 
 def escape_ffmpeg_text(text: str) -> str:
     """Escape special characters for FFmpeg drawtext filter."""
+    # Normalize curly quotes to straight equivalents before escaping
+    text = text.replace("\u2018", "'").replace("\u2019", "'")
+    text = text.replace("\u201c", '"').replace("\u201d", '"')
     result: list[str] = []
     for ch in text:
         if not _is_renderable(ch):
