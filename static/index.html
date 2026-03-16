@@ -576,6 +576,23 @@
     margin-bottom: 1rem;
   }
 
+  .job-detail-script {
+    background: #1a1a24;
+    border: 1px solid #2a2a3a;
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .job-detail-script-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b6b80;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.75rem;
+  }
+
   .job-detail-error .error-title {
     font-size: 1rem;
     font-weight: 700;
@@ -813,6 +830,7 @@
           </div>
           <div class="progress-pct" id="job-detail-progress-pct">0%</div>
         </div>
+        <div class="job-detail-script" id="job-detail-script" hidden></div>
         <div class="job-detail-error" id="job-detail-error" hidden>
           <div class="error-title">Generation Failed</div>
           <div class="error-stage" id="job-detail-error-stage"></div>
@@ -961,6 +979,8 @@
     document.getElementById('job-detail-prompt').textContent = '';
     document.getElementById('job-detail-metadata').innerHTML = '';
     document.getElementById('job-detail-progress').hidden = true;
+    document.getElementById('job-detail-script').hidden = true;
+    document.getElementById('job-detail-script').innerHTML = '';
     document.getElementById('job-detail-error').hidden = true;
     document.getElementById('job-detail-video').hidden = true;
     document.getElementById('job-detail-video').innerHTML = '';
@@ -1035,6 +1055,27 @@
     var statusInfo = getJobStatusInfo(data.status);
     metaHtml += '<div class="job-detail-metadata-row"><span class="job-detail-metadata-label">Status</span><span class="job-status-badge ' + statusInfo.cssClass + '">' + statusInfo.label + '</span></div>';
     document.getElementById('job-detail-metadata').innerHTML = metaHtml;
+
+    // Script (scenes)
+    var scriptEl = document.getElementById('job-detail-script');
+    if (data.script && data.script.length > 0) {
+      var scriptHtml = '<div class="job-detail-script-title">Script</div>';
+      for (var i = 0; i < data.script.length; i++) {
+        var scene = data.script[i];
+        scriptHtml += '<div class="job-scene">';
+        scriptHtml += '<span class="job-scene-label">Scene ' + (i + 1) + ':</span>';
+        scriptHtml += '<span class="job-scene-narration">' + escapeHtml(scene.narration_text || '') + '</span>';
+        if (scene.visual_description) {
+          scriptHtml += '<span class="job-scene-visual">' + escapeHtml(scene.visual_description) + '</span>';
+        }
+        scriptHtml += '</div>';
+      }
+      scriptEl.innerHTML = scriptHtml;
+      scriptEl.hidden = false;
+    } else {
+      scriptEl.innerHTML = '';
+      scriptEl.hidden = true;
+    }
 
     // Hide all status-specific sections first
     document.getElementById('job-detail-progress').hidden = true;

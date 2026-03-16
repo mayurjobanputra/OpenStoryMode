@@ -4,6 +4,23 @@ Open-source AI video generator. Type a prompt, get a narrated video with visuals
 
 OpenStoryMode takes your idea, writes a scene-by-scene script using an LLM, generates images and narration for each scene, and assembles everything into an MP4. Built with Python, FastAPI, and vanilla JS. Runs locally on your machine via [OpenRouter](https://openrouter.ai/).
 
+## Screenshots
+
+### Create Page
+The home page gives you a simple interface to enter your video idea, pick a length and aspect ratio, and kick off generation.
+
+![Create Page](create-page.png)
+
+### Jobs Page
+After submitting, you land on the Jobs page — a grid of all your video generation jobs with their current status. Click any card to see the full details.
+
+![Jobs Page](jobs-page.png)
+
+### Job Details
+The detail page shows the original prompt, metadata, and the generated scene-by-scene script on the left. Once the video is ready, it plays on the right (no autoplay).
+
+![Job Details](job-details-1.png)
+
 ## Prerequisites
 
 - Python 3.10 or newer
